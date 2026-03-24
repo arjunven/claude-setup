@@ -15,7 +15,7 @@ Pulls in all feedback from a PR, summarises them and addresses each one, tells y
 Claude uses this to run my pre-commit file after changes have been made so that it finds linting issues before actually committing. So this would run Ruff and ty on my Python backend and then biome on my TypeScript frontend.
 
 ## /rebase
-With many parallel work trees, it's nice to be able to rebase the current one onto the latest. This skill is great because it automatically rebases, figures out merge conflicts, and resolves them.
+With many parallel work trees, it's nice to be able to rebase the current one onto the latest changes in main. This skill is great because it automatically rebases, figures out merge conflicts, and resolves them.
 
 ## /review-pr
 This is a skill that's used with the GitHub workflows. It was just nice to have the prompt for the PR review in a single spot rather than in the GitHub workflow file.
