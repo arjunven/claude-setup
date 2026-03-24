@@ -38,6 +38,6 @@ So I set these up using the OAuth token method described here: https://github.co
 > Or CLAUDE_CODE_OAUTH_TOKEN for OAuth token authentication (Pro and Max users can generate this by running claude setup-token locally)
 
 - The `/install-github-app` described in the [Claude Code docs](https://code.claude.com/docs/en/github-actions#claude-code-github-actions) appears to be super broken
-  - I filed a Github issue about it here: https://github.com/anthropics/claude-code/issues/26227#issuecomment-4036334488 But I don't think it's fixed yet.
+  - I filed a Github issue about it here: https://github.com/anthropics/claude-code/issues/26227 But I don't think it's fixed yet.
   - The only thing it was good for is that it did walk me through the OAuth setup... but then I had to go modify the workflow files manually to follow the [examples on the Claude Code GitHub Actions repo](https://github.com/anthropics/claude-code-action/blob/main/docs/solutions.md#automatic-pr-code-review).
 
