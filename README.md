@@ -8,7 +8,7 @@ Some notes:
 - This is nice because you can just use the smaller skills as you need, or Claude will use them as it needs them ad hoc. When it's called in a larger skill, it's just like little pieces of a recipe.
 - In general, these were not made all in one shot, and I don't actually recommend you copying all of these in one shot. I think it's best to just add little bits and pieces as you go, where you're like, "Oh, I do this manual, repetitive thing over and over" just ask Claude to make a skill. I would say like 50% of my PRs have a small tweak or a new skill added to the .claude folder. I don't try to make separate PRs just for claude stuff. Just roll it in as you go.
 - I have Linear plumbed right into Claude via the [Linear MCP](https://linear.app/docs/mcp), and I find it really nice as a place to compose tickets with Claude. I'll talk through an issue and figure out the architecture. Claude will actually write the whole plan to a Linear ticket, and I can choose to `/send` that Linear ticket right now or save it for later. At a future date, when that Linear ticket is relevant, I can use the `/worktree` skill or the `/send` skill to just implement that ticket. The whole plan is already fleshed out in there.
-- Also, another plug: I started using [Wispr Flow](https://wisprflow.ai/), and it's kind of nuts. You can just talk to Claude, and it's really good at voice dictation.
+- Also, another plug: I started using [Wispr Flow](https://wisprflow.ai/), and it's kind of nuts. You can just talk to Claude, and it's really good at voice dictation. (Wrote most of this with Wispr Flow.)
 
 ## `/address-pr-feedback`
 Pulls in all feedback from a PR, summarises them and addresses each one, tells you if it's been addressed or not.
