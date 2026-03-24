@@ -30,3 +30,14 @@ This is my most used skill. I'll open up a new terminal tab and then use this sk
 
 ## `/title`
 I run Claude code in a CLI in a terminal called [cmux](https://cmux.com/). I just use this to name the tabs within Cmux. That way I can just keep track of all my work trees. Also recommend [ghostty](https://ghostty.org/). 
+
+# Workflows Setup
+
+So I set these up using the OAuth token method described here: https://github.com/anthropics/claude-code-action/blob/main/docs/setup.md
+
+> Or CLAUDE_CODE_OAUTH_TOKEN for OAuth token authentication (Pro and Max users can generate this by running claude setup-token locally)
+
+- The `/install-github-app` described in the [Claude Code docs](https://code.claude.com/docs/en/github-actions#claude-code-github-actions) appears to be super broken
+  - I filed a Github issue about it here: https://github.com/anthropics/claude-code/issues/26227#issuecomment-4036334488 But I don't think it's fixed yet.
+  - The only thing it was good for is that it did walk me through the OAuth setup... but then I had to go modify the workflow files manually to follow the [examples on the Claude Code GitHub Actions repo](https://github.com/anthropics/claude-code-action/blob/main/docs/solutions.md#automatic-pr-code-review).
+
