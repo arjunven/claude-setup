@@ -1,7 +1,13 @@
 # claude-setup
 A snapshot of my Claude Code setup.
 
-**This isn't meant to be copied wholesale. Treat it as inspiration.** It's an example of one setup, very specific to how I work. Use it as a reference for how you might build up your own rules and skills; some pieces will lift straight across, most of it you'll want to adapt, and you should add it piece by piece. None of it was made in one shot either. Whenever you catch yourself doing some manual, repetitive thing over and over, ask Claude to make a skill for it. I'd say about 50% of my PRs have a small tweak or a new skill added to the `.claude` folder. I don't make separate PRs just for Claude stuff, I roll it in as I go.
+**This isn't meant to be copied wholesale. Treat it as an example.** It's one setup, very specific to how I work. Some of it you can copy directly, most of it you'll want to adapt, and either way add it piece by piece. None of it was made in one shot either.
+
+The two places things go:
+- **`CLAUDE.md`** is for general housekeeping and guidelines: coding standards, branch discipline, how you want Claude to communicate, things it keeps getting wrong. When Claude does something you don't like, add a rule.
+- **Skills** are for repeated automation: a multi-step thing you do the same way every time (rebase, open a PR, spin up dev servers). When you notice you're doing the same manual sequence again, ask Claude to make a skill for it.
+
+I'd say about 50% of my PRs have a small tweak to `CLAUDE.md` or a new skill added to the `.claude` folder. I don't make separate PRs just for Claude stuff, I roll it in as I go.
 
 Some skills are specific to my projects; however, the following are the highlights that are worth copying. Project-specific stuff (domain vocabulary, real paths, real ticket numbers) has been scrubbed or replaced with placeholders like `PROJ-123` and `app.db`.
 
