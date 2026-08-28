@@ -32,7 +32,7 @@
 
 # Model roles for subagents
 
-- **The `/deep-review` engine always runs on Opus — never Fable.** Its vendored script (`.claude/skills/deep-review/code-review-workflow.js`) pins `model: "opus", effort: "xhigh"` on every `agent()` call; keep those pins through any edit. The built-in `/code-review` runs as a single background fork that inherits the session model at every effort level — no workflow script, no worker agents to pin — which is acceptable for the light tier it serves in `/send`.
+- **Review agents always run on Opus — never Fable.** The heavy review tier in `/send` pins `model: "opus", effort: "xhigh"` on every worker agent. The built-in `/code-review` runs as a single background fork that inherits the session model at every effort level, which is acceptable for the light tier it serves in `/send`.
 - **Don't downgrade review agents to Sonnet/Haiku** without being asked.
 - **When the session model is Fable, delegate implementation bodies** (roughly >30-line diffs from an approved spec) to Opus subagents; keep judgment work (architecture, review verdicts, PR descriptions) and small direct edits in the main loop.
 
@@ -54,28 +54,6 @@ The API contract is **stable machine identities plus data**, not presentation. T
 
 - **Map identity to copy in a full `Record<Identity, ...>`**, keyed by the generated union type from `@/client`, so a newly-added backend identity becomes a TypeScript error at registry-edit time instead of a silent blank at render time. This is how the set of valid identities has one source (the backend enum, via `bun run type-gen`) while the copy has one source (the registry), with the type system forcing them to stay in sync.
 - **Exceptions where copy may live server-side:** copy that is itself data (CMS-authored, admin- or user-editable without a deploy), or multiple human-facing consumers needing byte-identical copy (then expose a dedicated metadata endpoint, still not labels in the data model). i18n is the forcing function: the moment you would localize, identities and keys stay on the backend and copy moves to the frontend or a translation layer.
-
----
-
-# Copywriting and content
-
-When drafting or editing user-facing prose (page hero copy, FAQs, marketing sections, error messages with brand voice, changelog summaries), **read the existing site copy first** for voice and vocabulary. Don't draft from generic SaaS instincts. Anchor to the vocabulary and rhythm you find in the existing pages and content folders rather than inventing parallel phrasing. Skip the legal pages — privacy and terms follow their own register and aren't a reference for marketing copy.
-
----
-
-# Explaining a mechanism
-
-Applies wherever machinery gets explained rather than just named: PR bodies, commit messages, plan documents, and replies in chat.
-
-- **Anchor it to something already known.** "It's RANSAC in shape — guess two correspondences, predict the rest, count agreement, keep the best" lands in a sentence where describing the loop from scratch takes three paragraphs. Name the algorithm, pattern, or data structure it resembles, then say where it differs.
-- **Lead with the failure, not the design.** What broke, on which input, by how much — before any description of the fix. A reader who doesn't know what goes wrong can't judge whether the fix is the right shape.
-- **Work one real example all the way through, with real numbers.** A real record and its actual values, not a hypothetical. One example carried end to end beats three sketched.
-- **Name the case the mechanism cannot decide.** Most non-trivial machinery has a degeneracy it can't resolve on its own evidence. Say which, and say what breaks the tie — that is usually the part worth reviewing.
-- **Say what didn't change.** "Nothing structural — one constant re-expressed, one new invariant" scopes a review faster than a list of what did.
-- **Plain word first, technical term second.** "One ruler — position is slope × value + intercept" reads for everyone; opening on "an affine map in fit space" loses half the room. Introduce the term after the picture.
-- **Plain English means direct sentences, not fewer technical terms.** Terms that name real things stay: `distinct_id`, `useRef`, session replay, a 365-day cookie. What goes is coined vocabulary and meta-commentary, labels that gesture at the point instead of stating it. Say what the code does, subject-verb-object.
-- **An analogy may sit beside the mechanism, never replace it.** When someone asks for plain English, the answer is plainer sentences around the same mechanism, not a story in place of it.
-- **Check what a headline number is relative to before quoting it.** A shift measured against each point's own value explodes near zero. Put the absolute move beside it, or leave it out.
 
 ---
 
@@ -101,17 +79,6 @@ Applies wherever machinery gets explained rather than just named: PR bodies, com
 - **A ticket or approved plan is a starting point, not gospel.** Tickets and plans capture intent at one moment. When discussion in the session refines, reshapes, or contradicts them, the session decision supersedes the ticket. Flag that the ticket text is now stale (and offer to update it), but never treat the staleness as a blocker.
 - **Conventions go to CLAUDE.md, feature decisions go to the ticket.** A durable working rule or convention that surfaced in conversation belongs here in CLAUDE.md. A decision specific to one feature (an event schema, an API shape) belongs in that feature's ticket or in code comments — not here.
 - **Never name a Linear ticket by bare ID — always add a super-short description.** In plans and in chat, write it as `PROJ-123 (crawlable /pricing page)`, never `PROJ-123` on its own, so the reader knows what the ticket is without opening it. Exempt: structured identifiers that already carry the context elsewhere — PR-title prefixes like `[PROJ-123]` and branch slugs like `worktree-proj-123-feature-slug`.
-
----
-
-# Design decisions: consult the literature before iterating
-
-Applies to every engineering decision — backend, frontend, infra, tooling, process.
-
-- **Engineering questions are usually named, solved problems — check before spinning.** Whether the decision concerns storage shape vs API shape, caching, concurrency, auth flows, frontend state management, testing strategy, or deployment, the first move is "what does the industry call this?" — search out the established patterns *and* anti-patterns and anchor the recommendation to them, before iterating designs from first principles. A plan that spends five revisions debating whether the DB schema should match the API shape collapses almost immediately once someone names the standard framing (data independence / three-schema architecture; source-of-truth vs derived data).
-- **Same rule for mechanisms: a robust, well-used library beats hand-rolling.** Before building a mechanism (a cache, retry/backoff, a scheduler, rate limiting, a parser), check whether a widely adopted library already implements it, and verify the claim "nothing fits" by actually searching rather than asserting it. Vet maturity before adopting (adoption, maintenance activity, maintainer track record). This extends the "before writing a helper, inventory what the module already has" discipline outward: module first, codebase second, ecosystem third.
-- **Steer the user with named patterns.** Name the pattern or anti-pattern (three-schema architecture, CQRS read models, hybrid relational+JSON, EAV, materialized projections…), say where the canonical treatment lives (Kleppmann's *Designing Data-Intensive Applications*, Fowler's bliki, vendor docs, a library's own docs), and state how our case maps onto it and where it differs. "This is X, the known trade-offs are Y, here's our deviation" beats a bespoke argument built from scratch.
-- **Patterns frame the decision; measurements still decide it.** A named pattern is not a substitute for the repo's measurement discipline (`EXPLAIN QUERY PLAN`, benchmarks, real-DB gates). And quote what sources literally say; flag inferences as inference, not as "the docs say".
 
 ---
 
@@ -141,27 +108,6 @@ When producing a plan for a non-trivial task (a feature, a refactor, a salvage/r
 - **After plan mode exits into a worktree branch, immediately `cd` to the worktree** — do NOT stay in the main repo root. The plan was created for work in the worktree.
 - **Worktrees need `.env` and the dev DB** — most scripts require env vars and the SQLite DB. The default worktree-creation flows (CLI `worktree` skill, GUI auto-worktree) don't copy these gitignored files. Before running any backend script in a fresh worktree, run the `setup-worktree` skill — it copies both from the main repo, with idempotent skips and proper WAL/SHM handling. Don't `cp` either file manually.
 
-## Plan mode and branch/worktree context
-
-Due to a [Claude Code bug](https://github.com/anthropics/claude-code/issues/11239), the working directory resets to the main repo root after plan mode exits (worktree `.git` files redirect project root resolution). To work around this:
-
-- **When creating a plan on a non-`main` branch, embed the branch context into the plan** — add a `## Prerequisites` section at the **top** of the plan:
-  - For **worktree branches** (e.g. `worktree-*`): include the absolute worktree path and a `cd` instruction. The worktree path follows `.claude/worktrees/<slug>/` where the slug is derived from the branch name (strip `worktree-` prefix).
-    ```
-    ## Prerequisites
-    This plan targets worktree branch `worktree-<slug>`.
-    **Before executing any steps**, `cd` to the worktree:
-    `cd /absolute/path/to/.claude/worktrees/<slug>/`
-    ```
-  - For **regular feature branches** (e.g. `claude/*`): include the branch name and a checkout instruction.
-    ```
-    ## Prerequisites
-    This plan targets branch `claude/<name>`.
-    **Before executing any steps**, verify you are on this branch:
-    `git checkout claude/<name>`
-    ```
-- **When executing a plan that has a Prerequisites section, follow it first** — before any code changes, `cd` to the worktree or `git checkout` the branch. If the current branch is `main` but the plan targets a different branch, do NOT proceed until on the correct branch.
-
 ## Branch discipline
 
 - **NEVER write code on `main`** — not a single file edit, not even "I'll move it later." Before touching any code, you MUST be on the correct branch. This is a hard prerequisite for all work.
@@ -183,16 +129,6 @@ Due to a [Claude Code bug](https://github.com/anthropics/claude-code/issues/1123
 # Third-party config is read-only from the agent
 
 - **Inspect third-party backend data via the vendor CLI — read-only.** Use the vendor's CLI (`GET`-shaped calls only) to list plans, users, or config. **Never make configuration changes through the CLI** — no enable/patch/mutating calls, no plan or feature edits. Vendor config (auth provider, billing, analytics) is owned and reviewed in the dashboard by humans; an agent-driven config change can silently affect billing, gating, or production users. Don't query the vendor REST API ad-hoc with `curl` and a secret from `.env` either.
-
----
-
-# Database
-
-- **The dev SQLite DB lives at `backend/data/app.db`**, not the repo root. `sqlite3 app.db` from the root does not error — it silently **creates a new empty database**, which then reads as a real-but-empty DB and sends you debugging the wrong thing. Always give the full path.
-- **Alembic migrations are created manually**, not via `alembic revision --autogenerate`. Do not generate migration files or modify `alembic/env.py`.
-- **Use the project's `DatabaseManager` for all DB access. Read it first** so you use its session scoping, ORMs, and existing save/query helpers rather than reaching for raw `create_engine` or `sqlite3`.
-- **Never checkpoint the WAL by hand — the replication tool owns checkpointing.** No `PRAGMA wal_checkpoint(...)` in application code, scripts, or one-off migrations. Litestream holds a long-running read transaction so it can replicate WAL pages before SQLite copies them back into the main database, and runs its own passive checkpoints. An application checkpoint landing between its own breaks WAL continuity, and it answers a break by **re-snapshotting the entire database**. If a bulk script worries about WAL growth, the fix is smaller transactions, not manual checkpoints. Set `wal_autocheckpoint=0` for the application in production, along with `busy_timeout`.
-- **Verify new or changed queries with `EXPLAIN QUERY PLAN` and wall-clock timing against the real dev DB** (read-only `sqlite3` is fine; a worktree's copied DB has full production-scale data). Two checks, each one command: the **plan** — confirm `SEARCH ... USING INDEX` vs `SCAN` matches what you think the query does — and the **time** — `.timer on`, then run the query shape with realistic bind values, comparing before/after when changing an existing query. The test suite structurally cannot catch this class of bug: tests run on small fixture DBs where even a full scan is instant, so a query that plans as `SCAN` on the real table still ships a green suite. SQLite defeats Postgres/MySQL intuition in specific ways — default `LIKE` is case-insensitive so it cannot use a BINARY-collated index even for `'prefix%'` patterns, and an `ESCAPE` clause disables the LIKE-prefix optimization entirely. Prefer index-native forms (e.g. a half-open range `col >= prefix AND col < bound` for prefix matching).
 
 ---
 
