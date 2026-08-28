@@ -1,7 +1,7 @@
 # claude-setup
 A snapshot of my Claude Code setup.
 
-**Don't copy all of this in one shot.** None of it was made in one shot either. It's best to add little bits and pieces as you go: whenever you catch yourself doing some manual, repetitive thing over and over, just ask Claude to make a skill for it. I'd say about 50% of my PRs have a small tweak or a new skill added to the `.claude` folder. I don't make separate PRs just for Claude stuff, I roll it in as I go.
+**This isn't meant to be copied wholesale. Treat it as inspiration.** It's an example of one setup, very specific to how I work. Use it as a reference for how you might build up your own rules and skills; some pieces will lift straight across, most of it you'll want to adapt, and you should add it piece by piece. None of it was made in one shot either. Whenever you catch yourself doing some manual, repetitive thing over and over, ask Claude to make a skill for it. I'd say about 50% of my PRs have a small tweak or a new skill added to the `.claude` folder. I don't make separate PRs just for Claude stuff, I roll it in as I go.
 
 Some skills are specific to my projects; however, the following are the highlights that are worth copying. Project-specific stuff (domain vocabulary, real paths, real ticket numbers) has been scrubbed or replaced with placeholders like `PROJ-123` and `app.db`.
 
