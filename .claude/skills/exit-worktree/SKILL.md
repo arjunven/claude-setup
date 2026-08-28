@@ -14,7 +14,7 @@ Exit the current worktree, switch back to `main`, and remove the worktree and it
 
 2. **Identify the branch and worktree path**: From the worktree list, extract:
    - The worktree absolute path
-   - The branch name (e.g. `worktree-mer-381-datasheet-extractor`)
+   - The branch name (e.g. `worktree-proj-381-feature-slug`)
 
 3. **Find the associated PR**: Run `gh pr list --head <branch> --state all --json number,state,title --limit 1` to find the PR for this branch.
    - If no PR exists, warn the user and ask whether to proceed with cleanup anyway (the work may have been abandoned).

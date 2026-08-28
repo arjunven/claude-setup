@@ -1,6 +1,6 @@
 ---
 name: worktree
-description: Create and initialize a git worktree for isolated parallel work, then invoke /send to perform the requested task inside it. Pass a Linear ticket (e.g. MER-381) or a description of the task to do.
+description: Create and initialize a git worktree for isolated parallel work, then invoke /send to perform the requested task inside it. Pass a Linear ticket (e.g. PROJ-381) or a description of the task to do.
 allowed-tools: Bash(bun install:*),Bash(uv sync:*),Bash(gh pr create:*),Bash(gh pr view:*),Bash(mkdir:*),Bash(git worktree:*)
 ---
 
@@ -14,15 +14,15 @@ Create an isolated git worktree, initialize its environment, then delegate to `/
 
 ## Steps
 
-1. **Set title**: Invoke `/title` immediately with a short label derived from the task argument (e.g. `MER-381 Datasheet Extractor` or `Fix Login Redirect`). Do this before any other work so the user can identify this session.
+1. **Get context for naming**: If the argument looks like a Linear ticket (e.g. `PROJ-381`), fetch the ticket details to derive a short, descriptive slug (e.g. `proj-381-feature-slug`). Otherwise, derive a slug from the task description.
 
-2. **Get context for naming**: If the argument looks like a Linear ticket (e.g. `MER-381`), fetch the ticket details to derive a short, descriptive slug (e.g. `mer-381-datasheet-extractor`). Otherwise, derive a slug from the task description.
-
-3. **Name the worktree**: The worktree directory and branch should reflect the work:
-   - Linear ticket: `mer-381-<short-description>` → branch `worktree-mer-381-<short-description>`
+2. **Name the worktree**: The worktree directory and branch should reflect the work:
+   - Linear ticket: `proj-381-<short-description>` → branch `worktree-proj-381-<short-description>`
    - Conventional prefix otherwise: `feat-`, `fix-`, `chore-` followed by a short slug
 
-4. **Create the worktree**: Use the `EnterWorktree` tool with the name determined in step 3. If `EnterWorktree` is unavailable, fall back to:
+3. **Refresh `origin/main`**: Run `git fetch origin main` first. `EnterWorktree`'s default base ref is `origin/<default-branch>`, but that's the local tracking ref — only as fresh as the last fetch. Without this step the worktree can branch off a stale main and miss recently-merged changes.
+
+4. **Create the worktree**: Use the `EnterWorktree` tool with the name determined in step 2. If `EnterWorktree` is unavailable, fall back to:
    1. `git worktree add .claude/worktrees/<name> -b worktree-<name> origin/main`
    2. `cd` into `.claude/worktrees/<name>/`
 
@@ -30,7 +30,7 @@ Create an isolated git worktree, initialize its environment, then delegate to `/
    - `uv sync` from the worktree root — creates `.venv` and installs Python dependencies
    - `bun install` in the worktree's `frontend/` directory — installs JS dependencies
 
-6. **Send it**: Invoke `/send <original-arguments>`. PRs must be opened as **ready for review** (not draft) — this is critical so the auto-review bot triggers immediately.
+6. **Send it**: Invoke `/send <original-arguments>`. PRs must be opened as **ready for review** (not draft); `/send` then runs the review tier its Step 7 picks (`/deep-review` or the built-in `/code-review`) and posts a top-level review-summary comment on the PR.
 
 ## Cleanup
 

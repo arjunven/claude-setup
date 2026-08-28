@@ -41,10 +41,10 @@ jobs:
           additional_permissions: |
             actions: read
 
-          # When triggered on a PR, Claude can also run /review-pr if asked.
-          # e.g. "@claude review this PR" or "@claude /review-pr"
+          # When triggered on a PR, Claude can also run /code-review if asked.
+          # e.g. "@claude review this PR" or "@claude /code-review high --comment"
 
           # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
           # or https://code.claude.com/docs/en/cli-reference for available options
-          claude_args: '--model claude-opus-4-6'
+          claude_args: '--model claude-opus-4-7'
 
